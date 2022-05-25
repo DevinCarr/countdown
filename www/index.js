@@ -142,7 +142,7 @@ document.getElementById('form').addEventListener('submit', function(event) {
 });
 
 // debug
-timers = [{id: "123", datetime: "2022-05-25T07:04:28.590Z", description: "Soon!"}]
+//timers = [{id: "123", datetime: "2022-05-25T07:04:28.590Z", description: "Soon!"}]
 
 // Add timers to page
 const timersElem = document.getElementById('timers');
