@@ -1,0 +1,28 @@
+.form-fields {
+    display: flex;
+}
+
+.form-fields > input {
+    margin-right: 1rem;
+ }
+
+.card {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 0.1rem solid #d1d1d1;
+    border-radius: .4rem;
+    box-shadow: none;
+    box-sizing: inherit;
+    margin-bottom: 1rem;
+    padding: 1rem;
+}
+
+.card-details {
+    width: 100%;
+}
+
+.card .card-button {
+    width: 50px;
+    margin-bottom: 0;
+}

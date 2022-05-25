@@ -1,0 +1,11 @@
+name = "countdown"
+main = "src/index.ts"
+compatibility_date = "2022-04-30"
+
+workers_dev = false
+route = "https://countdown.devincarr.com/api/*"
+
+[[unsafe.bindings]]
+name = "D1"
+type = "cfsql"
+database = "countdown"
