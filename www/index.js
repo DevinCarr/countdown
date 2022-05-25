@@ -141,6 +141,9 @@ document.getElementById('form').addEventListener('submit', function(event) {
     });
 });
 
+// debug
+timers = [{id: "123", datetime: "2022-05-25T07:04:28.590Z", description: "Soon!"}]
+
 // Add timers to page
 const timersElem = document.getElementById('timers');
 const timersList = document.createDocumentFragment();
@@ -148,18 +151,18 @@ for (const timer of timers) {
     try {
         const z = new Date(parseDate(timer.datetime));
         const diff = fromNow(z);
-        let sep = 'is in';
+        let sep = 'is';
         if (diff[0] < 0) {
             sep = 'was';
         }
         if (timer.description === undefined) {
             sep = '';
         }
-        const v = `${timer.description || ''} ${sep} ${new Intl.RelativeTimeFormat().format(...diff)}`;
+        const v = `${sep} ${new Intl.RelativeTimeFormat().format(...diff)}`;
         const h = `
             <div class="column" id="timer-${timer.id}">
                 <div class="card">
-                    <div class="card-details">${v}</div>
+                    <div class="card-details"><strong>${timer.description || ''}</strong> ${v}</div>
                     <input class="button button-clear card-button" onclick="removeTimer('${timer.id}')" value="🗑️">
                 </div>
             </div>
