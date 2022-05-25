@@ -21,7 +21,7 @@ async function readRequestBody(request: Request) {
 export const routeTimers = (router: Router) => {
     router.get('/api/timers', cookieAuth, async (request: AuthedRequest, env: any) => {
         const timers = await query(env.D1,
-            `SELECT id, description, datetime, created_date, created_by FROM timers WHERE created_by = ?1`,
+            `SELECT id, description, datetime, created_date, created_by FROM timers WHERE created_by = ?1 ORDER BY datetime`,
             [request.user.sub]);
         return new Response(JSON.stringify(timers.result), {
             headers: {
