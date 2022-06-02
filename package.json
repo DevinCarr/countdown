@@ -1,8 +1,8 @@
 {
     "devDependencies": {
+        "@cloudflare/d1": "^1.4.1",
         "@cloudflare/workers-types": "^3.8.0",
         "@types/cookie": "^0.5.1",
-        "@xtuc/d1": "^1.1.0",
         "wrangler": "^0.0.27"
     },
     "dependencies": {

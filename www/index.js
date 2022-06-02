@@ -178,6 +178,4 @@ for (const timer of timers) {
 timersElem.appendChild(timersList);
 
 // TODO
-// - Set min calendar date treshold
 // - Grey out a timer once elapsed
-// - Sort timers to show closest at top

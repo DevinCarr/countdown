@@ -1,8 +1,8 @@
 import { parse } from 'cookie';
-import { query } from '@xtuc/d1';
 import jwt_decode from 'jwt-decode';
 import { Router } from 'itty-router';
 import { User } from './db';
+import { Database } from '@cloudflare/d1';
 
 const COOKIE_NAME = 'CF_Authorization';
 
@@ -26,10 +26,9 @@ export const auth = async (request: AuthedRequest, env: any) => {
         return unauthorizedResponse();
     }
 
-    const response = await query(env.D1,
-        `INSERT OR IGNORE INTO users (sub, email) VALUES (?1, ?2)`,
-        [user.sub, user.email]
-    );
+    await new Database(env.D1).prepare(
+        `INSERT OR IGNORE INTO users (sub, email) VALUES (?1, ?2)`
+    ).bind(user.sub, user.email).run();
     request.user = user
 }
 
@@ -59,10 +58,10 @@ export const routeUsers = (router: Router) => {
     })
     
     router.get("/api/users", auth, async (_: Request, env: any) => {
-        const data = await query(env.D1, 
+        const { results } = await new Database(env.D1).prepare(
             `SELECT sub, email FROM users`,
-        );
-        return new Response(JSON.stringify(data), {
+        ).all();
+        return new Response(JSON.stringify(results), {
             headers: {
                 'content-type': 'application/json;charset=UTF-8',
             },

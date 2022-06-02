@@ -1,6 +1,6 @@
 import { cookieAuth, AuthedRequest } from './auth';
 import { Request as RRequest, Router } from 'itty-router';
-import { query } from '@xtuc/d1';
+import { Database } from '@cloudflare/d1';
 
 async function readRequestBody(request: Request) {
     const { headers } = request;
@@ -20,10 +20,11 @@ async function readRequestBody(request: Request) {
 
 export const routeTimers = (router: Router) => {
     router.get('/api/timers', cookieAuth, async (request: AuthedRequest, env: any) => {
-        const timers = await query(env.D1,
-            `SELECT id, description, datetime, created_date, created_by FROM timers WHERE created_by = ?1 ORDER BY datetime`,
-            [request.user.sub]);
-        return new Response(JSON.stringify(timers.result), {
+        const { results } = await new Database(env.D1).prepare(
+            `SELECT id, description, datetime, created_date, created_by FROM timers WHERE created_by = ?1 ORDER BY datetime`)
+            .bind(request.user.sub)
+            .all();
+        return new Response(JSON.stringify(results), {
             headers: {
                 'content-type': 'application/json;charset=UTF-8',
             },
@@ -33,9 +34,11 @@ export const routeTimers = (router: Router) => {
     router.post('/api/timers', cookieAuth, async (request: AuthedRequest, env: any) => {
         const form = await readRequestBody(request);
         console.log(form);
-        const timers = await query(env.D1,
-            `INSERT INTO timers (description, datetime, created_date, created_by) VALUES (?1, ?2, ?3, ?4)`,
-            [form['description'], form['datetime'], new Date().toISOString(), request.user.sub]);
+        const response = await new Database(env.D1).prepare(
+            `INSERT INTO timers (description, datetime, created_date, created_by) VALUES (?1, ?2, ?3, ?4)`)
+            .bind(form['description'], form['datetime'], new Date().toISOString(), request.user.sub)
+            .run();
+        console.log('Added new timer: ', response.lastRowId, response.changes);
 
         const baseURL = new URL(request.url).origin;
         return new Response(null, {
@@ -51,10 +54,11 @@ export const routeTimers = (router: Router) => {
         if (id === undefined) {
             return new Response('Bad Request',  { status: 400 });
         }
-        const timers = await query(env.D1,
-            `DELETE FROM timers WHERE id = ?1 AND created_by = ?2`,
-            [id, request.user.sub]);
-        return new Response(JSON.stringify(timers.result), {
+        const { results } = await new Database(env.D1).prepare(
+            `DELETE FROM timers WHERE id = ?1 AND created_by = ?2`)
+            .bind(id, request.user.sub)
+            .run();
+        return new Response(JSON.stringify(results), {
             headers: {
                 'content-type': 'application/json;charset=UTF-8',
             },

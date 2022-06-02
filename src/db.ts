@@ -1,4 +1,4 @@
-import { query } from '@xtuc/d1';
+import { Database } from '@cloudflare/d1';
 
 export interface User {
     sub: string,
@@ -38,28 +38,11 @@ const migrations = [
     ]
 ];
 
-export const init = async (d1: any) => {
-    return await query(d1, createTables);
+export const init = async (db: Database) => {
+    return await db.batch(createTables.map(txt => db.prepare(txt)));
 }
 
-export const migrate = async (d1: any) => {
-    let results = [];
-    for (const [up, down] of migrations) {
-        const data = await query(d1, up);
-        results.push(data);
-    }
-    return results;
-}
-
-export const clean = async (d1: any) => {
-    let results = [];
-    for (const table of tables) {
-        const data = await query(d1, [
-            `DROP TABLE IF EXISTS users`,
-            `DROP TABLE IF EXISTS timers`,
-        ]);
-        results.push(data);
-    }
-    return results;
+export const clean = async (db: Database) => {
+    return await db.batch(tables.map(txt => db.prepare(txt)));
 }
 
