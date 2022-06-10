@@ -17,26 +17,28 @@ function parseDateForInput(date) {
 
 function fromNow(date) {
     let t = Math.ceil(date - new Date()) / 1000;
+    const inPast = t < 0 ? -1 : 1;
+    t = Math.abs(t);
     if (t < 60) {
-        return [t, 'second'];
+        return [t * inPast, 'second'];
     }
-    t /= 60;
+    t = Math.floor(t / 60);
     if (t < 60) {
-        return [t, 'minute'];
+        return [t * inPast, 'minute'];
     }
-    t /= 60;
+    t = Math.floor(t / 60);
     if (t < 24) {
-        return [t, 'hour'];
+        return [t * inPast, 'hour'];
     }
-    t /= 24;
+    t = Math.floor(t / 24);
     if (t < 7) {
-        return [t, 'day'];
+        return [t * inPast, 'day'];
     }
-    t /= 7;
+    t = Math.floor(t / 7);
     if (t < 52) {
-        return [t, 'week'];
+        return [t * inPast, 'week'];
     }
-    return [t/365, 'year'];
+    return [Math.floor(t/365) * inPast, 'year'];
 }
 
 const response = await fetch('/api/users/me', {
@@ -142,7 +144,7 @@ document.getElementById('form').addEventListener('submit', function(event) {
 });
 
 // debug
-//timers = [{id: "123", datetime: "2022-05-25T07:04:28.590Z", description: "Soon!"}]
+//timers = [{id: "123", datetime: "2022-06-09T07:04:28.590Z", description: "Soon!"}]
 
 // Add timers to page
 const timersElem = document.getElementById('timers');
@@ -176,6 +178,3 @@ for (const timer of timers) {
     }
 }
 timersElem.appendChild(timersList);
-
-// TODO
-// - Grey out a timer once elapsed
